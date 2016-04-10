@@ -1,7 +1,6 @@
 package files;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -11,28 +10,28 @@ import java.util.regex.Pattern;
 
 public class TIni {
 	private TFile file;
-	   private Pattern  __ptn_section  = Pattern.compile( "\\s*\\[([^]]*)\\]\\s*" );
-	   private Pattern  __ptn_key = Pattern.compile( "\\s*([^=]*)=(.*)" );
-	   private Map<String, Map<String, String>>  __entries  = new HashMap<>();
+	
+	private Pattern  __ptn_section  = Pattern.compile( "\\s*\\[([^]]*)\\]\\s*" );
+	private Pattern  __ptn_key = Pattern.compile( "\\s*([^=]*)=(.*)" );
+	private Map<String, Map<String, String>>  __entries  = new HashMap<>();
 
-	TIni(TFile file)
+	TIni(TFile file) throws IOException
 	{
 		this.file = file;
+		load();
 	}
 	
-	TIni(String path) throws IOException
+	TIni(String path, boolean create) throws IOException
 	{
-		this.file = new TFile(path);
-		
-		load();
+		this(new TFile(path, false));
 	}
 	
 	private void load() throws IOException
 	{
-		if (!file.exists())
+		if (!this.file.exists())
 			return;
 
-		BufferedReader __reader = new BufferedReader(new InputStreamReader(file.input()));
+		BufferedReader __reader = new BufferedReader(new InputStreamReader(this.file.input()));
 		String __line = null;
 		String __section = null;
 		
@@ -40,29 +39,40 @@ public class TIni {
 		{
 			Matcher __matcher = __ptn_section.matcher(__line);
 			
-			__section = __matcher.matches() ? __matcher.group(1).trim() : null;
+			if (__matcher.matches())
+				__section = __matcher.group(1).trim();
 			
-			if (__section != null)
+			if ((__section != null) && __ptn_key.matcher(__line).matches())
 			{
+				String key = __matcher.group(1).trim();
+				String value = __matcher.group(2).trim();
 				
+				if (__entries.get(__section) == null)
+					__entries.put(__section, new HashMap<>());
+				
+				__entries.get(__section).put(key, value);
 			}
 		}
 	}
 	
-	public String read(String section, String key) throws IOException
+	public void add(String section, String key, String value, boolean write)
 	{
-		return null;
-
-	}
-
-	public int readInt(String section, String key) throws NumberFormatException, IOException
-	{
-		return Integer.parseInt(read(section, key));
+		
 	}
 	
-	public float readFloat(String section, String key) throws NumberFormatException, IOException
+	public String entry(String section, String key)
 	{
-		return Float.parseFloat(read(section, key));
+		return __entries.get(section).get(key);
+	}
+
+	public int readInt(String section, String key) throws NumberFormatException
+	{
+		return Integer.parseInt(entry(section, key));
+	}
+	
+	public float readFloat(String section, String key) throws NumberFormatException
+	{
+		return Float.parseFloat(entry(section, key));
 	}
 	
 	public boolean write(String section, String key, String value)

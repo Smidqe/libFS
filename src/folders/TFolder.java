@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import files.*;
 
@@ -28,18 +31,18 @@ public class TFolder {
 		this.exists = (new File((new URL(path)).toURI())).exists();
 	}
 	
-	private void refresh() throws FileNotFoundException
+	private void refresh() throws IOException
 	{
-		String files[] = new TFile(this.path).list();
+		String files[] = new TFile(this.path, false).list();
 		
 		if (this.files.size() > 0)
 			this.files.clear();
 		
 		for (String s : files)
-			this.files.add(new TFile(s));
+			this.files.add(new TFile(s, false));
 	}
 	
-	private int count(boolean refresh) throws FileNotFoundException
+	private int count(boolean refresh) throws IOException
 	{
 		if (refresh)
 			refresh();
@@ -62,24 +65,42 @@ public class TFolder {
 		return this.exists;
 	}
 	
-	public boolean search(String name, String path, boolean recursive) throws IOException, URISyntaxException
+	public ArrayList<Map<String, Map<TFile, String>>> search(String name, boolean recursive, ArrayList<URI> folders, ArrayList<Map<String, Map<TFile, String>>> found, int layer) throws IOException, URISyntaxException
 	{
 		if (!exists())
-			return false;
-
-		for (TFile f : files)
-			if (f.isDirectory() && recursive)
-				(new TFolder(f.getCanonicalPath())).search(name, recursive);
+			return null;
 		
-		return false;
+		if ((folders == null) && recursive)
+			folders = new ArrayList<URI>();
+			
+		for (TFile f : files)
+		{
+			if (f.isDirectory() && recursive)
+				folders.add(f.toURI());
+			else
+				continue;
+			
+			if (f.getName().matches(name))
+			{
+				if (found.get(layer).get(this.name) == null)
+					found.add(new HashMap<String, Map<TFile, String>>());
+				
+				found.get(layer).get(this.name).put(f, f.getAbsolutePath());
+			}
+		}
+
+		if (recursive)
+			return search(name, recursive, folders, found, layer++);
+		else
+			return found;
 	}
 	
-	public boolean search(String name, boolean recursive) throws IOException, URISyntaxException
+	public ArrayList<Map<String, Map<TFile, String>>> search(String name, boolean recursive) throws IOException, URISyntaxException
 	{
-		return search(name, this.path, recursive);
+		return search(name, recursive, null, new ArrayList<>(), 0);
 	}
 	
-	public int count() throws FileNotFoundException
+	public int count() throws IOException
 	{
 		return count(false);
 	}

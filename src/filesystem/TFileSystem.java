@@ -1,6 +1,7 @@
 package filesystem;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -28,9 +29,9 @@ public class TFileSystem {
 		folders = new ArrayList<TFolder>();
 	}
 
-	public boolean add(String filename, boolean directory) throws FileNotFoundException
+	public boolean add(String filename, boolean directory) throws IOException
 	{
-		TFile file = new TFile(filename);
+		TFile file = new TFile(filename, false);
 
 		if (file.exists())
 			files.add(file);
@@ -48,7 +49,7 @@ public class TFileSystem {
 		return this.folders;
 	}
 	
-	public boolean add(ArrayList<String> filenames, boolean directory) throws FileNotFoundException
+	public boolean add(ArrayList<String> filenames, boolean directory) throws IOException
 	{
 		int size = files.size();
 		

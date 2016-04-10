@@ -21,32 +21,41 @@ public class TFile extends File{
 
 	private static final long serialVersionUID = 1L;
 
-	public TFile(String pathname) throws FileNotFoundException
+	public TFile(String pathname, boolean create) throws IOException
 	{
-		this(pathname, true);
+		this(pathname, true, create);
 	}
 	
-	public TFile(String pathname, boolean read) throws FileNotFoundException
+	public TFile(String pathname, boolean read, boolean create) throws IOException
 	{
 		super(pathname);
+
+		if (create)
+		{
+			this.createNewFile();
+		}
 		
-		this.path = pathname;
+		this.path = this.getAbsolutePath();
 		this.name = getName();
 		this.type = getExtension();
 		
 		set_method(!read);
 	}
 
-	public void set_method(boolean write) throws FileNotFoundException
+	private void refresh() throws FileNotFoundException
 	{
-		this.read = !write;
-		this.write = write;
-		
-		System.out.println("Write: " + this.write + ", Read: " + this.read);
 		if (this.read)
 			__reader = new FileInputStream(this.path);
 		else
 			__writer = new FileOutputStream(this.path);
+	}
+	
+	public void set_method(boolean write) throws IOException
+	{
+		this.read = !write;
+		this.write = write;
+		
+		refresh();
 	}
 
 	public String getExtension()
@@ -78,14 +87,16 @@ public class TFile extends File{
 	{
 		if (!this.write || this.binary)
 			return false;
-		
+
 		OutputStreamWriter w = new OutputStreamWriter(__writer);
 
 		if (!overwrite)
 			w.append(s);
 		else
 			w.write(s);
-
+		
+		w.flush();
+		
 		return false;
 	}
 	
@@ -94,14 +105,16 @@ public class TFile extends File{
 		if (!this.read || this.binary)
 			return null;
 		
+		
 		ArrayList<String> lines = new ArrayList<String>();
-			BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(path)));
-			String __tmp;
-			
-			while ((__tmp = r.readLine()) != null)
-				lines.add(__tmp);
-			
-			r.close();
+		BufferedReader r = new BufferedReader(new InputStreamReader(__reader));
+
+		String __tmp;
+
+		while ((__tmp = r.readLine()) != null)
+			lines.add(__tmp);
+
+		refresh();
 		
 		return lines;
 	}
@@ -121,12 +134,12 @@ public class TFile extends File{
 		return result;
 	}
 	
-	public TFile convert(File file) throws FileNotFoundException
+	public TFile convert(File file) throws IOException
 	{
-		return new TFile(file.getAbsolutePath());
+		return new TFile(file.getAbsolutePath(), false);
 	}
 	
-	public ArrayList<TFile> convert(File[] listFiles) throws FileNotFoundException 
+	public ArrayList<TFile> convert(File[] listFiles) throws IOException 
 	{
 		ArrayList<TFile> converted = new ArrayList<TFile>();
 		
