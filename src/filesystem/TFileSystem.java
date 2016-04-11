@@ -1,6 +1,5 @@
 package filesystem;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 

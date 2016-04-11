@@ -31,15 +31,14 @@ public class TFile extends File{
 		super(pathname);
 
 		if (create)
-		{
 			this.createNewFile();
-		}
 		
 		this.path = this.getAbsolutePath();
-		this.name = getName();
+		this.name = super.getName();
 		this.type = getExtension();
 		
-		set_method(!read);
+		if (!isDirectory())
+			set(!read);
 	}
 
 	private void refresh() throws FileNotFoundException
@@ -50,7 +49,7 @@ public class TFile extends File{
 			__writer = new FileOutputStream(this.path);
 	}
 	
-	public void set_method(boolean write) throws IOException
+	public void set(boolean write) throws IOException
 	{
 		this.read = !write;
 		this.write = write;
@@ -71,6 +70,11 @@ public class TFile extends File{
 	public String getType()
 	{
 		return this.type;
+	}
+	
+	public String getName()
+	{
+		return this.name;
 	}
 	
 	public OutputStream output()
