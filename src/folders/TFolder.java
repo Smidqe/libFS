@@ -61,8 +61,9 @@ public class TFolder {
 	{
 		return this.exists;
 	}
+
 	
-	//not finished yet... needs a logic upgrade
+	
 	public Map<String, Map<String, String>> search(String name, TFolder current, boolean subfolders, Map<String, Map<String, String>> found) throws IOException, URISyntaxException
 	{
 		if (!exists() || current.count(true) == 0)
@@ -90,9 +91,23 @@ public class TFolder {
 		return search(name, this, subfolders, new HashMap<>());
 	}
 	
-	public ArrayList<TFolder> subfolders()
+	public ArrayList<TFile> subfolders()
 	{
-		return null;
+		ArrayList<TFile> result = new ArrayList<TFile>();
+		
+		for (TFile f : files)
+			if (f.isDirectory())
+				result.add(f);
+		
+		return result;
+	}
+	
+	public TFolder convert(TFile file) throws MalformedURLException, URISyntaxException
+	{
+		if (!file.isDirectory())
+			return null;
+
+		return new TFolder(file.getAbsolutePath());
 	}
 	
 	public int count() throws IOException
@@ -110,17 +125,25 @@ public class TFolder {
 		return this.files;
 	}
 	
-/*	
-	public void print()
-	{
-		TTextDebug debug = TTextDebug.instance();
+	
+	public String print()
+	{	
+		StringBuilder __builder = new StringBuilder();
 		
-		debug.print("Folder: ", e_TText.HEADER);
-		
+		__builder.append("FOLDER: " + this.name + "\n");
 		for (TFile file : files)
-			debug.print("- " + file.getName(), e_TText.SUBSTRING);
+			__builder.append("  - " + file.getName() + "\n");
 		
-		debug.print("\n", e_TText.FOOTER);
+		__builder.append("");
+		
+		return __builder.toString();
 	}
-*/
+	
+	public String print(boolean subfolders)
+	{
+		if (!subfolders)
+			return print();
+		
+		return null;
+	}
 }

@@ -55,9 +55,15 @@ public class TIni {
 		}
 	}
 	
-	public void add(String section, String key, String value, boolean write)
+	public void add(String section, String key, String value, boolean write) throws IOException
 	{
+		if (__entries.get(section) == null)
+			return;
 		
+		__entries.get(section).put(key, value);
+		
+		if (write)
+			write(section, key, value, false);
 	}
 	
 	public String entry(String section, String key)
@@ -75,13 +81,26 @@ public class TIni {
 		return Float.parseFloat(entry(section, key));
 	}
 	
-	public boolean write(String section, String key, String value)
+	public boolean write(String section, String key, String value, boolean replace) throws IOException
 	{
-		
-		
+		if (replace)
+		{
+			file.write("", true);
+			
+			for (String __section : __entries.keySet())
+			{
+				file.write("[" + __section + "]", false);
+				
+				for (String __key : __entries.get(__section).keySet())
+					file.write(__entries.get(__section).get(__key), false);
+			}
+		}
 		
 		return false;
 	}
 	
-	
+	public Map<String, Map<String, String>> entries()
+	{
+		return this.__entries;
+	}
 }

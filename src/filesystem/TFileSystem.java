@@ -1,6 +1,7 @@
 package filesystem;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 
@@ -10,7 +11,11 @@ import folders.*;
 /*
  	TODO:
  		- Finalise the methods and clean these functions (perhaps split something to elsewhere?)
- 		
+ 		- Other functionalities?
+ 			- Moving multiple files/folders
+ 			- Remove multiple files/folders
+ 			- Find certain folders/files
+ 			- 
  
  
  
@@ -28,13 +33,21 @@ public class TFileSystem {
 		folders = new ArrayList<TFolder>();
 	}
 
-	public boolean add(String filename, boolean directory) throws IOException
+	public boolean add(String filename, boolean directory, boolean create) throws IOException, URISyntaxException
 	{
-		TFile file = new TFile(filename, false);
+		TFile file = new TFile(filename, create);
 
-		if (file.exists())
+		if (file.exists() && !create)
 			files.add(file);
+		else
+			file.createNewFile();
 		
+		if (directory && create)
+		{
+			file.mkdir();
+			folders.add(new TFolder(file.getAbsolutePath()));
+		}
+
 		return file.exists();
 	}
 	
@@ -48,12 +61,22 @@ public class TFileSystem {
 		return this.folders;
 	}
 	
-	public boolean add(ArrayList<String> filenames, boolean directory) throws IOException
+	public TFolder copy(TFolder folder, String dest, boolean subfolders, String name)
+	{
+		return null;
+	}
+	
+	public TFolder rename(TFolder folder, String name)
+	{
+		return this.copy(folder, "", false, name);
+	}
+	
+	public boolean add(ArrayList<String> filenames, boolean directory, boolean create) throws IOException, URISyntaxException
 	{
 		int size = files.size();
 		
 		for (int i = 0; i < filenames.size(); i++)
-			add(filenames.get(i), directory);
+			add(filenames.get(i), directory, create);
 		
 		if (!directory)
 			return files.size() > size ? true : false;
@@ -86,6 +109,16 @@ public class TFileSystem {
 		return filtered;
 	}
 
+	public int fileCount()
+	{
+		return this.files.size();
+	}
+	
+	public int folderCount()
+	{
+		return this.folders.size();
+	}
+	
 	public static TFileSystem instance() {
 		return __self;
 	}

@@ -3,6 +3,7 @@
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.Map;
 
 import files.*;
@@ -22,16 +23,12 @@ public class mainclass {
 			System.out.println(file.getAbsolutePath());
 			System.out.println(file.getExtension());
 			System.out.println(file.getName());
-			System.out.println(file.input());
-			System.out.println(file.output());
 			System.out.println(file.getSize());
 			
 			
 			System.out.println("FILE::WRITING");
 			file.set(true);
-			
-			System.out.println(file.input());
-			System.out.println(file.output());
+
 			file.write("TESTING\nTESTING\nSOM\nTESTING\nTESTING", true);
 			System.out.println(file.getSize());
 			
@@ -39,11 +36,15 @@ public class mainclass {
 			file.set(false);
 			System.out.println(file.read());
 			System.out.println(file.read());
-			System.out.println(file.find("SOM"));
+			System.out.println(file.find("TEST"));
 			
+			System.out.println(file.getParent() + "test2.txt");
+			System.out.println(file = file.rename(file.getParent() + "test2.txt"));
+			System.out.println(file.getName());
+			System.out.println(file.getParent());
+			System.out.println(file.copy(file.getParent(), "copied_test.txt"));
 			
-			
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -55,6 +56,8 @@ public class mainclass {
 			System.out.println(folder.getPath());
 			System.out.println(folder.exists());
 			System.out.println(folder.count(true));
+			
+			System.out.println(folder.print());
 			
 			Map<String, Map<String, String>> found = folder.search("test", true);
 			System.out.println("SUBFILES/FOLDERS: " + found.size());
