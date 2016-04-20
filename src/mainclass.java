@@ -6,9 +6,9 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.Map;
 
-import files.*;
-import filesystem.*;
-import folders.*;
+import libfs.debug.folder.TFolderDebug;
+import libfs.files.TFile;
+import libfs.folders.TFolder;
 
 @SuppressWarnings("unused")
 
@@ -44,6 +44,7 @@ public class mainclass {
 			System.out.println(file.getParent());
 			System.out.println(file.copy(file.getParent(), "copied_test.txt"));
 			
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -57,8 +58,8 @@ public class mainclass {
 			System.out.println(folder.exists());
 			System.out.println(folder.count(true));
 			
-			System.out.println(folder.print());
-			
+			TFolderDebug __debug = new TFolderDebug();
+			__debug.information(folder, true);
 			Map<String, Map<String, String>> found = folder.search("test", true);
 			System.out.println("SUBFILES/FOLDERS: " + found.size());
 						
