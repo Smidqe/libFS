@@ -1,5 +1,7 @@
 package libfs.debug.text;
 
+import libfs.debug.text.enums.*;
+
 public class TTextDebug {
 	private static TTextDebug __self = new TTextDebug();
 	private int indentation;
@@ -9,7 +11,7 @@ public class TTextDebug {
 	{
 		this.indentation = 0;
 	}
-	
+
 	public void print(String txt, e_TText method, boolean suppress)
 	{
 
@@ -44,7 +46,7 @@ public class TTextDebug {
 		StringBuilder builder = new StringBuilder();
 
 		for (int i = 0; i < this.indentation; i++)
-			builder.append("--");
+			builder.append("-");
 		
 		if (indentation > 0)
 			builder.append(" ");
@@ -58,6 +60,16 @@ public class TTextDebug {
 			this.previous = builder.append(txt).toString();
 	}
 
+	public void print(String text)
+	{
+		this.print(text, e_TText.SUBSTRING, false);
+	}
+	
+	public void print(String text, e_TText method)
+	{
+		this.print(text, method, false);
+	}
+	
 	public String getString()
 	{
 		return this.previous;

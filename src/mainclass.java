@@ -6,8 +6,8 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.Map;
 
-import libfs.debug.folder.TFolderDebug;
 import libfs.files.TFile;
+import libfs.files.TIni;
 import libfs.folders.TFolder;
 
 @SuppressWarnings("unused")
@@ -53,13 +53,12 @@ public class mainclass {
 
 		try {
 			System.out.println("FOLDER::TESTING");
-			TFolder folder = new TFolder("src/testing/");
+			TFolder folder = new TFolder("src/testing/", false);
 			System.out.println(folder.getPath());
 			System.out.println(folder.exists());
 			System.out.println(folder.count(true));
 			
-			TFolderDebug __debug = new TFolderDebug();
-			__debug.information(folder, true);
+			folder.information(true);
 			Map<String, Map<String, String>> found = folder.search("test", true);
 			System.out.println("SUBFILES/FOLDERS: " + found.size());
 						
@@ -75,6 +74,15 @@ public class mainclass {
 			
 			
 		} catch (URISyntaxException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			TIni ini = new TIni("src/testing/Nadeo.ini", false);
+			
+			ini.information();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

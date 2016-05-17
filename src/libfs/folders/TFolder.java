@@ -3,11 +3,14 @@ package libfs.folders;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import libfs.debug.folder.TFolderDebug;
+import libfs.debug.text.TTextDebug;
+import libfs.debug.text.enums.e_TText;
 import libfs.files.TFile;
 
 public class TFolder {
@@ -21,13 +24,16 @@ public class TFolder {
 		name = "";
 	}
 	
-	public TFolder(String path) throws URISyntaxException, IOException
+	public TFolder(String path, boolean create) throws URISyntaxException, IOException
 	{
 		this();
 		this.path = (new File(path).getAbsolutePath());
 		this.exists = (new File(path).exists());
 		this.name = (new File(path).getName());
 		
+		if (create && !exists)
+			Files.createDirectory(new File(path).toPath());
+
 		refresh();
 	}
 	
@@ -60,6 +66,11 @@ public class TFolder {
 		return this.path;
 	}
 	
+	public Path path()
+	{
+		return new File(this.path).toPath();
+	}
+	
 	public boolean exists()
 	{
 		return this.exists;
@@ -73,7 +84,7 @@ public class TFolder {
 		for (TFile f : current.files)
 		{
 			if (f.isDirectory() && subfolders)
-				search(name, new TFolder(f.getAbsolutePath()), subfolders, found);
+				search(name, new TFolder(f.getAbsolutePath(), false), subfolders, found);
 			
 			if (f.getName().contains(name))
 			{
@@ -97,7 +108,7 @@ public class TFolder {
 		if (!file.isDirectory())
 			return null;
 
-		return new TFolder(file.getAbsolutePath());
+		return new TFolder(file.getAbsolutePath(), false);
 	}
 	
 	public int count() throws IOException
@@ -120,7 +131,7 @@ public class TFolder {
 		ArrayList<TFolder> folders = new ArrayList<TFolder>();
 		for (TFile file : files)
 			if (file.isDirectory())
-				folders.add(new TFolder(file.getAbsolutePath()));
+				folders.add(new TFolder(file.getAbsolutePath(), false));
 		
 		return folders;
 	}
@@ -155,11 +166,60 @@ public class TFolder {
 	
 	public void print(boolean showFiles) throws IOException, URISyntaxException
 	{
-		(new TFolderDebug()).information(this, showFiles);
+		information(showFiles);
 	}
 	
 	public void print() throws IOException, URISyntaxException
 	{
 		print(false);
+	}
+
+	public String getName() {
+		// TODO Auto-generated method stub
+		return this.name;
+	}
+	
+	public void contents(TFolder folder, boolean subfolders) throws URISyntaxException, IOException
+	{
+		TTextDebug __debug = TTextDebug.instance();
+		
+		__debug.print("FOLDER: " + folder.name(), e_TText.HEADER, false);
+		
+		for (TFile file : folder.getFiles())
+		{
+			if (file.isDirectory() && subfolders)
+				contents(new TFolder(file.getAbsolutePath(), false), subfolders);
+			
+			if (file.isDirectory())
+				__debug.print("D: " + file.getName(), e_TText.SUBSTRING, false);
+			else
+				__debug.print("F: " + file.getName(), e_TText.SUBSTRING, false);
+		}
+		__debug.print("", e_TText.FOOTER, false);
+	}
+	
+	public void information(boolean showFiles) throws IOException, URISyntaxException
+	{
+		TTextDebug __debug = TTextDebug.instance();
+		
+		__debug.print("FOLDER INFORMATION: ", e_TText.HEADER, false);
+		
+		__debug.print("Name: " + this.name(), e_TText.SUBSTRING, false);
+		__debug.print("Path: " + this.getPath(), e_TText.SUBSTRING, false);
+		__debug.print("Files: " + this.count(true), e_TText.SUBSTRING, false);	
+		__debug.print("Filetypes: " + this.filetypes().toString(), e_TText.SUBSTRING, false);
+		
+		if (showFiles)
+		{
+			__debug.print("FILES IN THE FOLDER: ", e_TText.HEADER, false);
+			
+			for (TFile file : this.getFiles())
+				__debug.print(file.getName(), e_TText.SUBSTRING, false);
+			
+			__debug.print("END OF FILES", e_TText.FOOTER, false);
+		}
+		
+		__debug.print("Directories: " + this.subfolders().toString(), e_TText.SUBSTRING, false);
+		__debug.print("END OF INFORMATION", e_TText.FOOTER, false);
 	}
 }

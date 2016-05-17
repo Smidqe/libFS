@@ -18,8 +18,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -93,9 +97,34 @@ public class TFile extends File{
 		return __reader = new FileInputStream(this.path);
 	}
 	
-	public void write(String s, int line, boolean replace)
+	private ArrayList<String> cnv_map(Map<Integer, String> map)
 	{
+		ArrayList<String> converted = new ArrayList<String>();
 		
+		for (Integer index : map.keySet())
+			converted.add(map.get(index));
+		
+		return converted;
+	}
+	
+	public boolean write(String s, int line, boolean replace) throws IOException
+	{
+		ArrayList<String> __lines = cnv_map(lines());
+		
+		if (__lines.size() < line || !this.exists() || this.isDirectory())
+			return false;
+		
+		if (replace && (__lines.get(line) != null))
+			__lines.set(line, s);
+		else
+			__lines.add(line, s);
+			
+		this.delete();
+		this.createNewFile();
+		
+		this.write(__lines, false);
+		
+		return true;
 	}
 	
 	public void write(String s, boolean overwrite) throws IOException
@@ -178,7 +207,15 @@ public class TFile extends File{
 		return result;
 	}
 	
+	public FileTime created() throws IOException
+	{
+		return Files.readAttributes(this.toPath(), BasicFileAttributes.class).creationTime();
+	}
 	
+	public FileTime modified() throws IOException
+	{
+		return Files.readAttributes(this.toPath(), BasicFileAttributes.class).lastModifiedTime();
+	}
 	
 	public TFile copy(String dest, String __name) throws IOException
 	{
@@ -220,5 +257,10 @@ public class TFile extends File{
 			converted.add(this.convert(f));
 		
 		return converted;
+	}
+
+	public void recreate() throws IOException {
+		this.delete();
+		this.createNewFile();
 	}
 }

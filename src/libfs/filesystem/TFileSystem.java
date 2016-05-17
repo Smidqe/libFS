@@ -2,6 +2,8 @@ package libfs.filesystem;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 
 import libfs.files.TFile;
@@ -44,7 +46,7 @@ public class TFileSystem {
 		if (directory && create)
 		{
 			file.mkdir();
-			folders.add(new TFolder(file.getAbsolutePath()));
+			folders.add(new TFolder(file.getAbsolutePath(), false));
 		}
 
 		return file.exists();
@@ -60,12 +62,28 @@ public class TFileSystem {
 		return this.folders;
 	}
 	
-	public TFolder copy(TFolder folder, String dest, boolean subfolders, String name)
+	public TFolder copy(TFolder folder, String dest, boolean subfolders, String name) throws IOException, URISyntaxException
 	{
-		return null;
+		if ((dest.equals("") && folder.getName().equals(name)))
+			return null;
+
+		TFolder __new = new TFolder(dest + name, false);
+		boolean success = false;
+		
+		if (dest.equals("") && !name.equals(folder.getName()))
+		{
+			Files.copy(folder.path(), __new.path(), StandardCopyOption.REPLACE_EXISTING);
+			Files.delete(folder.path());
+
+			return __new;
+		}
+		else
+			success = Files.copy(folder.path(), __new.path()) != null;
+
+		return success ? __new : null;
 	}
 	
-	public TFolder rename(TFolder folder, String name)
+	public TFolder rename(TFolder folder, String name) throws IOException, URISyntaxException
 	{
 		return this.copy(folder, "", false, name);
 	}
