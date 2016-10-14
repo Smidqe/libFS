@@ -1,4 +1,4 @@
-package libfs.folders;
+package libFileExtensions.folders;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import libfs.debug.text.TTextDebug;
-import libfs.debug.text.enums.e_TText;
-import libfs.files.TFile;
+import libFileExtensions.debug.text.TTextDebug;
+import libFileExtensions.debug.text.TTextDebug.TText;
+import libFileExtensions.files.TFile;
 
 public class TFolder {
 	private ArrayList<TFile> files;
@@ -183,7 +183,7 @@ public class TFolder {
 	{
 		TTextDebug __debug = TTextDebug.instance();
 		
-		__debug.print("FOLDER: " + folder.name(), e_TText.HEADER, false);
+		__debug.print("FOLDER: " + folder.name(), TText.HEADER, false);
 		
 		for (TFile file : folder.getFiles())
 		{
@@ -191,35 +191,35 @@ public class TFolder {
 				contents(new TFolder(file.getAbsolutePath(), false), subfolders);
 			
 			if (file.isDirectory())
-				__debug.print("D: " + file.getName(), e_TText.SUBSTRING, false);
+				__debug.print("D: " + file.getName(), TText.SUBSTRING, false);
 			else
-				__debug.print("F: " + file.getName(), e_TText.SUBSTRING, false);
+				__debug.print("F: " + file.getName(), TText.SUBSTRING, false);
 		}
-		__debug.print("", e_TText.FOOTER, false);
+		__debug.print("", TText.FOOTER, false);
 	}
 	
 	public void information(boolean showFiles) throws IOException, URISyntaxException
 	{
 		TTextDebug __debug = TTextDebug.instance();
 		
-		__debug.print("FOLDER INFORMATION: ", e_TText.HEADER, false);
+		__debug.print("FOLDER INFORMATION: ", TText.HEADER, false);
 		
-		__debug.print("Name: " + this.name(), e_TText.SUBSTRING, false);
-		__debug.print("Path: " + this.getPath(), e_TText.SUBSTRING, false);
-		__debug.print("Files: " + this.count(true), e_TText.SUBSTRING, false);	
-		__debug.print("Filetypes: " + this.filetypes().toString(), e_TText.SUBSTRING, false);
+		__debug.print("Name: " + this.name(), TText.SUBSTRING, false);
+		__debug.print("Path: " + this.getPath(), TText.SUBSTRING, false);
+		__debug.print("Files: " + this.count(true), TText.SUBSTRING, false);	
+		__debug.print("Filetypes: " + this.filetypes().toString(), TText.SUBSTRING, false);
 		
 		if (showFiles)
 		{
-			__debug.print("FILES IN THE FOLDER: ", e_TText.HEADER, false);
+			__debug.print("FILES IN THE FOLDER: ", TText.HEADER, false);
 			
 			for (TFile file : this.getFiles())
-				__debug.print(file.getName(), e_TText.SUBSTRING, false);
+				__debug.print(file.getName(), TText.SUBSTRING, false);
 			
-			__debug.print("END OF FILES", e_TText.FOOTER, false);
+			__debug.print("END OF FILES", TText.FOOTER, false);
 		}
 		
-		__debug.print("Directories: " + this.subfolders().toString(), e_TText.SUBSTRING, false);
-		__debug.print("END OF INFORMATION", e_TText.FOOTER, false);
+		__debug.print("Directories: " + this.subfolders().toString(), TText.SUBSTRING, false);
+		__debug.print("END OF INFORMATION", TText.FOOTER, false);
 	}
 }

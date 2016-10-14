@@ -1,8 +1,11 @@
-package libfs.debug.text;
-
-import libfs.debug.text.enums.*;
+package libFileExtensions.debug.text;
 
 public class TTextDebug {
+	public enum TText 
+	{
+		FOOTER, HEADER, SUBSTRING, WARNING, ERROR, CRITICAL
+	}
+	
 	private static TTextDebug __self = new TTextDebug();
 	private int indentation;
 	private String previous;
@@ -12,7 +15,7 @@ public class TTextDebug {
 		this.indentation = 0;
 	}
 
-	public void print(String txt, e_TText method, boolean suppress)
+	public void print(String txt, TText method, boolean suppress)
 	{
 
 		switch (method)
@@ -46,12 +49,12 @@ public class TTextDebug {
 		StringBuilder builder = new StringBuilder();
 
 		for (int i = 0; i < this.indentation; i++)
-			builder.append("-");
+			builder.append("--");
 		
 		if (indentation > 0)
 			builder.append(" ");
 		
-		if (method == e_TText.HEADER)
+		if (method == TText.HEADER)
 			indentation++;
 		
 		if (!suppress)
@@ -62,10 +65,10 @@ public class TTextDebug {
 
 	public void print(String text)
 	{
-		this.print(text, e_TText.SUBSTRING, false);
+		this.print(text, TText.SUBSTRING, false);
 	}
 	
-	public void print(String text, e_TText method)
+	public void print(String text, TText method)
 	{
 		this.print(text, method, false);
 	}

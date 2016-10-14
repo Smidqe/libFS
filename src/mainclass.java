@@ -1,14 +1,15 @@
 
-
-
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.Map;
+import java.util.UUID;
 
-import libfs.files.TFile;
-import libfs.files.TIni;
-import libfs.folders.TFolder;
+import libFileExtensions.files.TFile;
+import libFileExtensions.files.TIniFile;
+import libFileExtensions.files.TTextFile;
+import libFileExtensions.folders.TFolder;
 
 @SuppressWarnings("unused")
 
@@ -16,7 +17,7 @@ public class mainclass {
 
 	public static void main(String[] args) {
 		try {
-			TFile file = new TFile("src/testing/test.txt", true);
+			TTextFile file = new TTextFile("src/testing/test.txt", true);
 			
 			System.out.println("FILE::FUNCTIONS");
 			
@@ -27,19 +28,21 @@ public class mainclass {
 			
 			
 			System.out.println("FILE::WRITING");
-			file.set(true);
+			file.mode(true);
 
 			file.write("TESTING\nTESTING\nSOM\nTESTING\nTESTING", true);
+			file.write("Test", false);
 			System.out.println(file.getSize());
 			
 			System.out.println("FILE::READING");
-			file.set(false);
+			file.mode(false);
 			System.out.println(file.read());
 			System.out.println(file.read());
+			file.close();
 			System.out.println(file.find("TEST"));
 			
 			System.out.println(file.getParent() + "test2.txt");
-			System.out.println(file = file.rename(file.getParent() + "test2.txt"));
+			System.out.println(file = (TTextFile) file.rename(file.getParent() + "test2.txt"));
 			System.out.println(file.getName());
 			System.out.println(file.getParent());
 			System.out.println(file.copy(file.getParent(), "copied_test.txt"));
@@ -65,8 +68,8 @@ public class mainclass {
 			for (String key : found.keySet())
 			{
 				System.out.println("KEY: " + key);
-				System.out.println("\tVALUE: " + found.get(key));
-				System.out.println("\tAMOUNT: " + found.get(key).size());
+				System.out.println("VALUE: " + found.get(key));
+				System.out.println("AMOUNT: " + found.get(key).size());
 			}
 			
 			
@@ -79,13 +82,32 @@ public class mainclass {
 		}
 		
 		try {
-			TIni ini = new TIni("src/testing/Nadeo.ini", false);
+			TIniFile ini = new TIniFile("src/testing/Nadeo.ini", false);
 			
+			ini.add("TmForever", "Something", "Hello");
+			ini.add("TmForever", "Working", "True");
+			ini.set("TmForever", "Language", "fi");
+			ini.mode(true);
+			ini.write();
 			ini.information();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
+
+		try {
+			File file = new File("src/testing/conversion.txt");
+			TFile file2 = new TFile(file.getPath(), false);
+			
+			System.out.println(UUID.randomUUID().toString());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 }
